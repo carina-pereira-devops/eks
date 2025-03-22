@@ -35,7 +35,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    env:
+    with:
       environment: prd # Workspace prd no mesmo bucket
       # Role do Devops
       aws-assume-role-arn: "arn:aws:iam::535002861869:role/github-carina-devops-pipe"      
