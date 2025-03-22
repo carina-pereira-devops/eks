@@ -1,3 +1,8 @@
+# Policy
+data "aws_iam_policy" "required-policy" {
+  name = "AmazonEKSClusterAdminPolicy"
+}
+# Role
 resource "aws_iam_role" "eks_role" {
   name = "eksrole"
 
@@ -17,9 +22,9 @@ resource "aws_iam_role" "eks_role" {
 EOF
 }
 
-resource "aws_iam_role_policy_attachment" "attachment" {
-  role       = aws_iam_role.eks_role
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterAdminPolicy"
+# Attach
+resource "aws_iam_role_policy_attachment" "attach-eks" {
+  role       = aws_iam_role.eks_role.name
+  policy_arn = data.aws_iam_policy.required-policy.arn
 }
 
-data "aws_caller_identity" "current" {}
