@@ -41,27 +41,21 @@ jobs:
           echo "destroy=$(echo $DESTROY)" >> $GITHUB_OUTPUT
       - name: Terraform Init   # Inicializando Terraform com algumas especificações
         run: |
-          cd iac_eks && terraform init \
-            -backend-config="bucket=arquivo-de-estado" \
-            -backend-config="key=${{ github.event.repository.name }}" \
-            -backend-config="region=us-east-1"            
+          cd iac_eks && terraform init 
       - name: Terraform Validate # Validação código terraform
         run: terraform validate
       - name: Terraform Destroy
         if: steps.read-destroy-config.outputs.destroy == 'true' # De acordo com a validação de destroy, se a flag "true" para o ambiente o destroy será feito
         id: terraform-destroy
         run: cd iac_eks &&
-          terraform workspace select prd || terraform workspace new prd &&
-          terraform destroy -var-file="./envs/prd/terraform.tfvars" -auto-approve        
+          terraform destroy -auto-approve        
       - name: Terraform Plan # StateFile diferente para cada Workspace (Desenvolvimento... Produção ...) 
         if: steps.read-destroy-config.outputs.destroy != 'true' # Só executa quando a opção de destruição não for verdadeira
         id: terraform-plan
         run: cd iac_eks &&
-          terraform workspace select prd || terraform workspace new prd &&
-          terraform plan -var-file="./envs/prd/terraform.tfvars" -out="prd.plan"
+          terraform plan -out="prd.plan"
       - name: Terraform Apply # Construção da infra de acordo com o planejamento por ambiente na etapa anterior 
         if: steps.read-destroy-config.outputs.destroy != 'true' # Só executa quando a opção de destruição não for verdadeira
         id: terraform-apply
         run: cd iac_eks &&
-          terraform workspace select prd || terraform workspace new prd &&
           terraform apply "prd.plan"
