@@ -7,26 +7,6 @@ on:
     branches:
       - main
 
-# Variáveis obrigatórias para a execução (inputs)
-  workflow_call:
-    inputs:
-      environment:
-        type: string
-        required: true
-        default: prd
-      aws-region:
-        type: string
-        required: true   
-        default: us-east-1      
-      aws-assume-role-arn:
-        type: string
-        required: true
-        default: arn:aws:iam::535002861869:role/github-carina-devops-pipe
-      aws-statefile-s3-bucket:
-        type: string
-        required: true
-        default: arquivo-de-estado         
-
 # Configurações da AWS
 permissions:
   id-token: write
@@ -51,38 +31,37 @@ jobs:
       - name: Configure AWS credentials  # AWS
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ inputs.aws-assume-role-arn }}
+          role-to-assume: arn:aws:iam::535002861869:role/github-carina-devops-pipe
           role-session-name: GitHub_to_AWS_via_FederatedOIDC
-          aws-region: ${{ inputs.aws-region }}
+          aws-region: us-east-1
       - name: Read destroy configuration # Validação caso necessário deletar o ambiente
         id: read-destroy-config
         run: |
-          DESTROY="$(jq -r '.${{ inputs.environment }}' ./iac_eks/destroy_config.json)"
+          DESTROY="$(jq -r '.prd' ./iac_eks/destroy_config.json)"
           echo "destroy=$(echo $DESTROY)" >> $GITHUB_OUTPUT
       - name: Terraform Init   # Inicializando Terraform com algumas especificações
         run: |
           cd iac_eks && terraform init \
-            -backend-config="bucket=${{ inputs.aws-statefile-s3-bucket }}" \
+            -backend-config="bucket=arquivo-de-estado" \
             -backend-config="key=${{ github.event.repository.name }}" \
-            -backend-config="region=${{ inputs.aws-region }}"            
+            -backend-config="region=us-east-1"            
       - name: Terraform Validate # Validação código terraform
         run: terraform validate
       - name: Terraform Destroy
         if: steps.read-destroy-config.outputs.destroy == 'true' # De acordo com a validação de destroy, se a flag "true" para o ambiente o destroy será feito
         id: terraform-destroy
         run: cd iac_eks &&
-          terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }} &&
-          terraform destroy -var-file="./envs/${{ inputs.environment }}/terraform.tfvars" -auto-approve        
+          terraform workspace select prd || terraform workspace new prd &&
+          terraform destroy -var-file="./envs/prd/terraform.tfvars" -auto-approve        
       - name: Terraform Plan # StateFile diferente para cada Workspace (Desenvolvimento... Produção ...) 
         if: steps.read-destroy-config.outputs.destroy != 'true' # Só executa quando a opção de destruição não for verdadeira
         id: terraform-plan
         run: cd iac_eks &&
-          terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }} &&
-          terraform plan -var-file="./envs/${{ inputs.environment }}/terraform.tfvars" -out="${{ inputs.environment }}.plan"
+          terraform workspace select prd || terraform workspace new prd &&
+          terraform plan -var-file="./envs/prd/terraform.tfvars" -out="prd.plan"
       - name: Terraform Apply # Construção da infra de acordo com o planejamento por ambiente na etapa anterior 
         if: steps.read-destroy-config.outputs.destroy != 'true' # Só executa quando a opção de destruição não for verdadeira
         id: terraform-apply
         run: cd iac_eks &&
-          terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }} &&
-          terraform apply "${{ inputs.environment }}.plan"
-    
+          terraform workspace select prd || terraform workspace new prd &&
+          terraform apply "prd.plan"
