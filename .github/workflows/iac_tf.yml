@@ -13,21 +13,26 @@ on:
       environment:
         type: string
         required: true
+        default: prd
       aws-region:
         type: string
-        required: true        
+        required: true   
+        default: "us-east-1"      
       aws-assume-role-arn:
         type: string
         required: true
+        default: "arn:aws:iam::535002861869:role/github-carina-devops-pipe"
       aws-statefile-s3-bucket:
         type: string
-        required: true        
+        required: true
+        default: "arquivo-de-estado"         
 
 # Configurações da AWS
 permissions:
   id-token: write
   contents: read
 
+# Único Job  
 jobs:
   build:
     name: eks
@@ -35,14 +40,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    with:
-      environment: prd # Workspace prd no mesmo bucket
-      # Role do Devops
-      aws-assume-role-arn: "arn:aws:iam::535002861869:role/github-carina-devops-pipe"      
-      aws-region: "us-east-1"
-      # Bucket recebe as configurações antes da criação da Infra
-      aws-statefile-s3-bucket: "arquivo-de-estado" 
-    steps: # Etapas de execução
+    steps: # Etapas de execução   
       - name: Checkout code      # Git
         uses: actions/checkout@v4
       - name: Setup Terraform    # Terraform
