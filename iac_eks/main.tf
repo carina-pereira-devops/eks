@@ -82,10 +82,19 @@ module "eks" {
 module "eks_auth" {
   source = "aidanmelen/eks-auth/aws"
   eks    = module.eks
+
+    map_roles = [
+    {
+      rolearn  = "arn:aws:iam::535002861869:role/aws-service-role/eks.amazonaws.com/AWSServiceRoleForAmazonEKS"
+      username = "AWSServiceRoleForAmazonEKS"
+      groups   = ["system:masters"]
+    },
+  ]
+
   map_users = [
     {
-      userarn  = "arn:aws:iam::535002861869:user/devops"
-      username = "devops"
+      userarn  = "arn:aws:iam::535002861869:root"
+      username = "root"
       groups   = ["system:masters"]
     },
   ]
