@@ -17,15 +17,15 @@ on:
       aws-region:
         type: string
         required: true   
-        default: "us-east-1"      
+        default: us-east-1      
       aws-assume-role-arn:
         type: string
         required: true
-        default: "arn:aws:iam::535002861869:role/github-carina-devops-pipe"
+        default: arn:aws:iam::535002861869:role/github-carina-devops-pipe
       aws-statefile-s3-bucket:
         type: string
         required: true
-        default: "arquivo-de-estado"         
+        default: arquivo-de-estado         
 
 # Configurações da AWS
 permissions:
