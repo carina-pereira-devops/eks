@@ -1,4 +1,4 @@
-# Reusabilidade do código para ambientes
+# Nome
 name: "Terraform Workflow"
 
 # Commit na branch main
@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+
 # Variáveis obrigatórias para a execução (inputs)
   workflow_call:
     inputs:
@@ -28,7 +29,12 @@ permissions:
   contents: read
 
 jobs:
-  terraform:
+  build:
+    name: eks
+    runs-on: ubuntu-latest # definições de SO
+    defaults:
+      run:
+        shell: bash
     with: # variaveis que são obrigatórias para a execução da Pipe (etapas manuais)
       environment: prd # Workspace prd no mesmo bucket
       # Role do Devops
@@ -36,12 +42,7 @@ jobs:
       aws-region: "us-east-1"
       # Bucket recebe as configurações antes da criação da Infra
       aws-statefile-s3-bucket: "arquivo-de-estado" 
-      runs-on: ubuntu-latest # definições de SO
-
-    defaults:
-        run:
-          shell: bash
-      steps: # Etapas de execução
+    steps: # Etapas de execução
       - name: Checkout code      # Git
         uses: actions/checkout@v4
       - name: Setup Terraform    # Terraform
@@ -86,4 +87,4 @@ jobs:
         run: cd iac_eks &&
           terraform workspace select ${{ inputs.environment }} || terraform workspace new ${{ inputs.environment }} &&
           terraform apply "${{ inputs.environment }}.plan"
-  
+    
