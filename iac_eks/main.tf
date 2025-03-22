@@ -56,7 +56,7 @@ module "eks" {
   cluster_version = "1.29"
 
   cluster_endpoint_public_access           = true
-  enable_cluster_creator_admin_permissions = true
+  enable_cluster_creator_admin_permissions = true # permite acesso via EKS API and ConfigMap
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
