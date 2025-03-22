@@ -94,3 +94,6 @@ module "eks_auth" {
     "535002861869"
   ]
 }
+
+# IAM principal 
+# arn:aws:iam::535002861869:root
