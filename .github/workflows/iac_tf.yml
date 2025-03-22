@@ -35,7 +35,7 @@ jobs:
     defaults:
       run:
         shell: bash
-    with: # variaveis que são obrigatórias para a execução da Pipe (etapas manuais)
+    env:
       environment: prd # Workspace prd no mesmo bucket
       # Role do Devops
       aws-assume-role-arn: "arn:aws:iam::535002861869:role/github-carina-devops-pipe"      
