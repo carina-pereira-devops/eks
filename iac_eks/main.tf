@@ -78,3 +78,19 @@ module "eks" {
     }
   }
 }
+
+module "eks_auth" {
+  source = "aidanmelen/eks-auth/aws"
+  eks    = module.eks
+  map_users = [
+    {
+      userarn  = "arn:aws:iam::535002861869:user/devops"
+      username = "devops"
+      groups   = ["system:masters"]
+    },
+  ]
+
+  map_accounts = [
+    "535002861869"
+  ]
+}
