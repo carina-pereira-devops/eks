@@ -1,6 +1,6 @@
 # Policy
 data "aws_iam_policy" "required-policy" {
-  name = "AmazonEKSClusterAdminPolicy"
+  arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
 }
 # Role
 resource "aws_iam_role" "eks_role" {
