@@ -79,9 +79,12 @@ module "eks" {
   }
 }
 
+resource "aws_eks_access_policy_association" "eksrole" {
+  cluster_name  = local.cluster_name
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+  principal_arn = aws_iam_user.eksrole.arn
 
-resource "aws_eks_access_entry" "example" {
-  cluster_name    = local.cluster_name
-  principal_arn     = "arn:aws:iam::535002861869:root"
-  type              = "STANDARD"
+  access_scope {
+    type       = "cluster"
+  }
 }
