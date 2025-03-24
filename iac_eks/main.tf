@@ -78,3 +78,10 @@ module "eks" {
     }
   }
 }
+
+resource "aws_eks_access_entry" "example" {
+  cluster_name    = local.cluster_name
+  principal_arn     = "arn:aws:iam::535002861869:root"
+  kubernetes_groups = ["system:masters"]
+  type              = "STANDARD"
+}
