@@ -82,6 +82,7 @@ module "eks" {
 resource "aws_eks_access_policy_association" "example" {
   cluster_name    = local.cluster_name
   policy_arn      = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+                     arn:aws:iam::aws:policy/AmazonEKSClusterPolicy
   principal_arn   = "arn:aws:iam::535002861869:root"
 
   access_scope {
