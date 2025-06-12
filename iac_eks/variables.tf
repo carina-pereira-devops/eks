@@ -7,4 +7,6 @@ variable "region" {
   default     = "us-east-1"
 }
 
-variable "is-eks-cluster-enabled" {}
+variable "is-eks-cluster-enabled" {
+  default = true
+}
