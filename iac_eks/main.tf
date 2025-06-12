@@ -49,6 +49,7 @@ module "vpc" {
 }
 
 module "eks" {
+  count    = var.is-eks-cluster-enabled == true ? 1 : 0  
   source  = "terraform-aws-modules/eks/aws"
   version = "20.8.5"
 
