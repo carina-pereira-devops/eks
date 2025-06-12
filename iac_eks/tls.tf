@@ -1,5 +1,5 @@
 data "tls_certificate" "eks-certificate" {
-  url = cluster_name.identity.oidc.issuer
+  url = local.cluster_name.identity.oidc.issuer
 }
 
 data "aws_iam_policy_document" "eks_oidc_assume_role_policy" {
