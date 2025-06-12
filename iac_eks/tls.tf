@@ -1,21 +1,26 @@
-data "tls_certificate" "eks-certificate" {
-  url = local.cluster_name.identity.oidc.issuer
-}
-
-data "aws_iam_policy_document" "eks_oidc_assume_role_policy" {
-  statement {
-    actions = ["sts:AssumeRoleWithWebIdentity"]
-    effect  = "Allow"
-
-    condition {
-      test     = "StringEquals"
-      variable = "${replace(aws_iam_openid_connect_provider.eks-oidc.url, "https://", "")}:sub"
-      values   = ["system:serviceaccount:default:aws-test"]
+    resource "aws_iam_policy" "oidc_policy" {
+      name = "oidc-trust-policy"
+      description = "IAM policy to trust the EKS OIDC issuer"
+      policy = jsonencode({
+        version = "2012-10-17"
+        statement = [
+          {
+            effect = "Allow"
+            action = [
+              "sts:AssumeRoleWithWebIdentity",
+            ]
+            principal = {
+              "Federated" = local.cluster_name.identity.oidc.issuer
+            }
+            condition = {
+              "StringEquals" = {
+                "sts.amazonaws.com:aud" = "sts.amazonaws.com"
+              }
+              "StringLike" = {
+                "${local.cluster_name.identity.oidc.issuer}:sub" = "${local.cluster_name.identity.oidc.groups_claim}/*"
+              }
+            }
+          }
+        ]
+      })
     }
-
-    principals {
-      identifiers = [aws_iam_openid_connect_provider.eks-oidc.arn]
-      type        = "Federated"
-    }
-  }
-}
