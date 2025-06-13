@@ -24,7 +24,7 @@ resource "random_string" "suffix" {
 }
 
 module "vpc" {
-  count    = var.is-eks-cluster-enabled == true ? 1 : 0
+
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.8.1"
 
@@ -50,6 +50,7 @@ module "vpc" {
 }
 
 module "eks" {
+  count    = var.is-eks-cluster-enabled == true ? 1 : 0  
   source  = "terraform-aws-modules/eks/aws"
   version = "20.8.5"
 
