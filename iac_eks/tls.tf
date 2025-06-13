@@ -1,5 +1,5 @@
 data "tls_certificate" "eks-certificate" {
-  url = module.eks.identity.oidc.issuer
+  url = module.eks.oidc.issuer
 }
 
 data "aws_iam_policy_document" "eks_oidc_assume_role_policy" {
