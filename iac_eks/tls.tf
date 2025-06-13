@@ -1,6 +1,4 @@
-data "tls_certificate" "eks-certificate" {
-  url = module.eks[0].identity[0].oidc[0].issuer
-}
+
 data "aws_iam_policy_document" "eks_oidc_assume_role_policy" {
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
