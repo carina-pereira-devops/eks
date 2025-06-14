@@ -1,0 +1,24 @@
+# Simulando a replicação da mesma estrutura de PRD para HML DEV  ...
+name: "DEV"
+
+# Commit na branch main
+on:
+  push:
+    branches:
+      - developer
+
+# Configurações da AWS
+permissions:
+  id-token: write
+  contents: read
+
+# Executa código do sub-diretório (lembrando que é necessário mudar o código em questão para a pasta workflows)
+jobs:
+  terraform:
+    uses: ./.github/workflows/iac_tf.yml
+    with: # variaveis que são obrigatórias para a execução da Pipe (etapas manuais)
+      environment: dev # Workspace dev no mesmo bucket
+      # Role do EKS (Testar com a mesma de DevOps)
+      aws-assume-role-arn: "arn:aws:iam::535002861869:role/github-carina-devops-pipe"
+      aws-statefile-s3-bucket: "devops-s3-statefile" # validar 
+      aws-region: "us-east-1"
